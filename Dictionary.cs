@@ -21,7 +21,7 @@ namespace CrosswordSolver
 			var divs = body.Where((o) => (o.Name.Equals("div"))).ToList();
 			var content = divs.Where((o) => (o.Attributes[0].Value.Equals("main-container"))).ToList();
 			var answersContainer = content[0].ChildNodes[1].ChildNodes[1].ChildNodes[3].ChildNodes[1].ChildNodes[1].ChildNodes;
-			// TODO: fix the inner function so that this does not throw exceptions
+
 			var answersDivs = answersContainer.Where((o) => {
 				if (o.Attributes.Count != 0)
 					return o.Attributes[0].Value.Contains("result-row");
