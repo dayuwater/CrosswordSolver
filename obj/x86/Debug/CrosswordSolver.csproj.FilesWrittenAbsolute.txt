@@ -1,0 +1,7 @@
+/Users/tanwang/Projects/CrosswordSolver/CrosswordSolver/obj/x86/Debug/.NETFramework,Version=v4.5.AssemblyAttribute.cs
+/Users/tanwang/Projects/CrosswordSolver/CrosswordSolver/bin/Debug/CrosswordSolver.exe.mdb
+/Users/tanwang/Projects/CrosswordSolver/CrosswordSolver/bin/Debug/CrosswordSolver.exe
+/Users/tanwang/Projects/CrosswordSolver/CrosswordSolver/obj/x86/Debug/CrosswordSolver.exe
+/Users/tanwang/Projects/CrosswordSolver/CrosswordSolver/obj/x86/Debug/CrosswordSolver.exe.mdb
+/Users/tanwang/Projects/CrosswordSolver/CrosswordSolver/bin/Debug/HtmlAgilityPack.dll
+/Users/tanwang/Projects/CrosswordSolver/CrosswordSolver/bin/Debug/CsvHelper.dll
