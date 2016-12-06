@@ -8,13 +8,14 @@ namespace CrosswordSolver
 	partial class MainClass
 	{
 		// TODO: Add parameters for queries
-		public static List<DictionaryResult> LookUpDictionary()
+		public static List<DictionaryResult> LookUpDictionary(string query="", string pattern="", int length=0)
 		{
 			List<DictionaryResult> result = new List<DictionaryResult>();
-
+			// test
 			HtmlDocument doc = new HtmlDocument();
 			HtmlWeb web = new HtmlWeb();
-			doc = web.Load("http://www.dictionary.com/fun/crosswordsolver?query=pop+singers&pattern=&l=9");
+			doc = web.Load(String.Format("http://www.dictionary.com/fun/crosswordsolver?query={0}&pattern={1}&l={2}",
+			                             query,pattern,length));
 			Console.WriteLine(doc);
 			var body = doc.DocumentNode.ChildNodes[2].ChildNodes[3].ChildNodes;
 
