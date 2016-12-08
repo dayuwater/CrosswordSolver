@@ -14,8 +14,12 @@ namespace CrosswordSolver
 
 		public static void loadFile()
 		{
+			// test cases:
+			// Grid 1-1, pass with 1 hint. IDAS(12)
+			// Grid 1-2, fail
+			// Grid 1-4, pass with 0 hint. Another solution
 
-			string[] s = File.ReadAllLines("/Users/tanwang/Projects/CrosswordSolver/CrosswordSolver/clue1.csv");
+			string[] s = File.ReadAllLines("/Users/tanwang/Projects/CrosswordSolver/CrosswordSolver/clue4.csv");
 			int count = 0;
 			foreach (string s1 in s)
 			{
@@ -206,7 +210,17 @@ namespace CrosswordSolver
 			foreach (Word w in words.words)
 			{
 				if (!w.IsVisited(board))
-					FillTheCell(w);
+				{
+					if (!FillTheCell(w))
+					{
+						history = new Stack<Board>();
+						board = new Board();
+						SetupBoard();
+
+
+
+					}
+				}
 			}
 
 

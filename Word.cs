@@ -6,6 +6,14 @@ using HtmlAgilityPack;
 
 namespace CrosswordSolver
 {
+
+	public struct DictionaryResult
+	{
+		public int confidence;
+		public string word;
+
+
+	}
 	// each cell in the board
 
 	// data structure for words, including pending answer list
@@ -167,6 +175,10 @@ namespace CrosswordSolver
 				else if (s[i] == 8217)
 				{
 					builder.Append("%27");
+				}
+				else if (s[i] == '-')
+				{
+					builder.Append("%2C");
 				}
 				else
 				{
