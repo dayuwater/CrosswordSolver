@@ -11,15 +11,16 @@ namespace CrosswordSolver
 	// data structure for words, including pending answer list
 	public class Word
 	{
-		public List<DictionaryResult> pendingWords=new List<DictionaryResult>();
-		public string currentWord="";
+		public List<DictionaryResult> pendingWords = new List<DictionaryResult>();
+		public string currentWord = "";
 		public int length;
 		public string clue = "";
-		public int startX=-1;
-		public int startY=-1;
+		public int startX = -1;
+		public int startY = -1;
 		public bool horizontal = false;
 		public string id = "1";
 		public int totalCrossPoint = 0;
+		public List<Word> children = new List<Word>();
 
 		public void InitCell(Board b)
 		{
@@ -46,20 +47,57 @@ namespace CrosswordSolver
 		{
 			if (!horizontal)
 			{
-				for (int i = startX, j=0; i < startX+length; i++, j++)
+				for (int i = startX, j = 0; i < startX + length; i++, j++)
 				{
-					b.cells[i,startY].answer = currentWord[j];
+					b.cells[i, startY].answer = currentWord[j];
 
 				}
 			}
 			else {
 
-				for (int i = startY, j=0; i < startY + length; i++, j++)
+				for (int i = startY, j = 0; i < startY + length; i++, j++)
 				{
 					b.cells[startX, i].answer = currentWord[j];
 
 				}
 			}
+		}
+
+		public void GetChildren(Board b)
+		{
+			List<Word> result = new List<Word>();
+			if (!horizontal)
+			{
+				for (int i = startX, j = 0; i < startX + length; i++, j++)
+				{
+					b.cells[i, startY].answer = currentWord[j];
+					result = result.Union(MainClass.words.FindAll(b.cells[i, startY].ids)).ToList();
+
+				}
+			}
+			else {
+
+				for (int i = startY, j = 0; i < startY + length; i++, j++)
+				{
+					b.cells[startX, i].answer = currentWord[j];
+					result = result.Union(MainClass.words.FindAll(b.cells[startX, i].ids)).ToList();
+
+				}
+			}
+			children = result;
+			children.Remove(this);
+			children.Sort((x, y) =>
+			{
+				if (x.totalCrossPoint < y.totalCrossPoint)
+				{
+					return 1;
+				}
+				else
+				{
+					return -1;
+				}
+			});
+
 		}
 
 		public void ReadFromCell(Board b)
@@ -74,7 +112,7 @@ namespace CrosswordSolver
 					count += b.cells[i, startY].Count();
 				}
 			}
-			else 
+			else
 			{
 				for (int i = startY, j = 0; i < startY + length; i++, j++)
 				{
@@ -98,17 +136,60 @@ namespace CrosswordSolver
 			b.visited.Add(id);
 		}
 
+		private string getPattern(string s)
+		{
+			StringBuilder builder = new StringBuilder();
+			for (int i = 0; i < s.Length; i++)
+			{
+				if (s[i] == '?')
+				{
+					builder.Append("%3F");
+				}
+				else
+				{
+					builder.Append(s[i]);
+				}
+			}
+			return builder.ToString();
+		}
+
+		private string getQuery(string s)
+		{
+			StringBuilder builder = new StringBuilder();
+			for (int i = 0; i < s.Length; i++)
+			{
+
+				if (s[i] == ' ')
+				{
+					builder.Append("+");
+
+				}
+				else if (s[i] == 8217)
+				{
+					builder.Append("%27");
+				}
+				else
+				{
+					builder.Append(s[i]);
+				}
+			}
+			return builder.ToString();
+		}
+
+
 		public void LookUpDictionary()
 		{
-		    string query = clue;
-			string pattern = currentWord;
+			string query = getQuery(clue);
+			string pattern = getPattern(currentWord);
 			List<DictionaryResult> result = new List<DictionaryResult>();
 			// test
 			HtmlDocument doc = new HtmlDocument();
 			HtmlWeb web = new HtmlWeb();
-			doc = web.Load(String.Format("http://www.dictionary.com/fun/crosswordsolver?query={0}&pattern={1}&l={2}",
-										 query, pattern, length));
-			Console.WriteLine(doc);
+			string url = String.Format("http://www.dictionary.com/fun/crosswordsolver?query={0}&pattern={1}&l={2}",
+									 query, pattern, length);
+			doc = web.Load(url);
+
+			Console.WriteLine(url);
 			var body = doc.DocumentNode.ChildNodes[2].ChildNodes[3].ChildNodes;
 
 			var divs = body.Where((o) => (o.Name.Equals("div"))).ToList();
@@ -142,12 +223,29 @@ namespace CrosswordSolver
 
 	public class Words
 	{
-		public List<Word> words=new List<Word>();
+		public List<Word> words = new List<Word>();
+
+
+
+
 
 		public Word Find(string id)
 		{
 			return words.Find((obj) => (obj.id.Equals(id)));
 		}
+		public List<Word> FindAll(List<string> ids)
+		{
+			List<Word> result = new List<Word>();
+			foreach (string id in ids)
+			{
+				result.Add(Find(id));
+			}
+
+			return result;
+		}
+
+
+
 
 
 	}

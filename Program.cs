@@ -8,9 +8,9 @@ namespace CrosswordSolver
 	partial class MainClass
 	{
 
-		static Board board = new Board();
-		static Words words = new Words();
-		static Stack<Board> history;
+		public static Board board = new Board();
+		public static Words words = new Words();
+		static Stack<Board> history= new Stack<Board>();
 
 		public static void loadFile()
 		{
@@ -52,6 +52,10 @@ namespace CrosswordSolver
 			{
 				w.ReadFromCell(board);
 			}
+			foreach (Word w in words.words)
+			{
+				w.GetChildren(board);
+			}
 			words.words.Sort((x, y) =>
 			{
 				if (x.totalCrossPoint < y.totalCrossPoint)
@@ -64,6 +68,42 @@ namespace CrosswordSolver
 				}
 			});
 
+
+
+		}
+
+		static void FillTheCell(Word w)
+		{
+			w.LookUpDictionary();
+			if (w.pendingWords.Count != 0)
+			{
+				// success, update the board, push current state to history
+				w.currentWord = w.pendingWords[0].word;
+				w.MarkAsVisited(board);
+				w.WriteToCell(board);
+				history.Push(board);
+				board.PrintBoard();
+				// update the children
+				foreach (Word w1 in w.children)
+				{
+					if(!w1.IsVisited(board))
+						w1.ReadFromCell(board);
+
+				}
+				// traverse the children
+				foreach (Word w1 in w.children)
+				{
+					if(!w1.IsVisited(board))
+						FillTheCell(w1);
+
+				}
+
+			}
+			else 
+			{
+				// fail
+			}
+
 		}
 
 
@@ -73,13 +113,20 @@ namespace CrosswordSolver
 			loadFile();
 			SetupBoard();
 
+			foreach(Word w in words.words)
+			{
+				if(!w.IsVisited(board))
+					FillTheCell(w);
+			}
 
 
 
 
 
 
-			board.PrintBoard();
+
+
+
 		}
 	}
 }
