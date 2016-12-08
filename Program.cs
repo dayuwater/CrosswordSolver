@@ -10,7 +10,7 @@ namespace CrosswordSolver
 
 		public static Board board = new Board();
 		public static Words words = new Words();
-		static Stack<Board> history= new Stack<Board>();
+		static Stack<Board> history = new Stack<Board>();
 
 		public static void loadFile()
 		{
@@ -62,7 +62,7 @@ namespace CrosswordSolver
 				{
 					return 1;
 				}
-				else 
+				else
 				{
 					return -1;
 				}
@@ -72,13 +72,14 @@ namespace CrosswordSolver
 
 		}
 
-		static void FillTheCell(Word w)
+		static bool FillTheCell(Word w)
 		{
 			w.LookUpDictionary();
+			int currentWordIndex = 0;
 			if (w.pendingWords.Count != 0)
 			{
 				// success, update the board, push current state to history
-				w.currentWord = w.pendingWords[0].word;
+				start: w.currentWord = w.pendingWords[currentWordIndex].word;
 				w.MarkAsVisited(board);
 				w.WriteToCell(board);
 				history.Push(board);
@@ -86,22 +87,111 @@ namespace CrosswordSolver
 				// update the children
 				foreach (Word w1 in w.children)
 				{
-					if(!w1.IsVisited(board))
+					if (!w1.IsVisited(board))
 						w1.ReadFromCell(board);
 
 				}
 				// traverse the children
 				foreach (Word w1 in w.children)
 				{
-					if(!w1.IsVisited(board))
-						FillTheCell(w1);
+					if (!w1.IsVisited(board))
+					{
+						// if one of the children is failed, reset the board and try another word
+						if (!FillTheCell(w1))
+						{
+							history.Pop();
+							board = history.Peek();
+							if (currentWordIndex < w.pendingWords.Count - 1)
+							{
+								currentWordIndex++;
+								goto start;
+
+							}
+							// no pending word to try, so the search is failed
+							else 
+							{
+								return false;
+							}
+						}
+					}
 
 				}
+				return true;
 
 			}
-			else 
+			else
 			{
 				// fail
+				Console.WriteLine("Failed to find a possible word for this clue");
+				Console.WriteLine(w.id + " " + w.clue + " " + w.currentWord);
+			a: Console.WriteLine("1=Manual Input, 2=Admit failure");
+				string input = Console.ReadLine();
+				int inp = -1;
+				if (int.TryParse(input, out inp))
+				{
+					if (inp == 1)
+					{
+						// manual correction
+						Console.WriteLine("Enter the word now");
+						start:w.currentWord = Console.ReadLine();
+						w.MarkAsVisited(board);
+						w.WriteToCell(board);
+						history.Push(board);
+						board.PrintBoard();
+						// update the children
+						foreach (Word w1 in w.children)
+						{
+							if (!w1.IsVisited(board))
+								w1.ReadFromCell(board);
+
+						}
+						// traverse the children
+						foreach (Word w1 in w.children)
+						{
+							if (!w1.IsVisited(board))
+							{
+								// if one of the children is failed, reset the board and try another word
+								if (!FillTheCell(w1))
+								{
+									history.Pop();
+									board = history.Peek();
+									if (currentWordIndex < w.pendingWords.Count - 1)
+									{
+										currentWordIndex++;
+										goto start;
+
+									}
+									// no pending word to try, so the search is failed
+									else
+									{
+										return false;
+									}
+								}
+							}
+
+						}
+						return true;
+
+					}
+
+					else if (inp == 2)
+					{
+						// retry using other possible words
+
+						return false;
+					}
+					else
+					{
+						Console.WriteLine("You must enter either 1 or 2");
+						goto a;
+					}
+				}
+				else
+				{
+					Console.WriteLine("You must enter either 1 or 2");
+					goto a;
+				}
+
 			}
 
 		}
@@ -113,9 +203,9 @@ namespace CrosswordSolver
 			loadFile();
 			SetupBoard();
 
-			foreach(Word w in words.words)
+			foreach (Word w in words.words)
 			{
-				if(!w.IsVisited(board))
+				if (!w.IsVisited(board))
 					FillTheCell(w);
 			}
 
