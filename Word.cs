@@ -180,6 +180,14 @@ namespace CrosswordSolver
 				{
 					builder.Append("%2C");
 				}
+				else if (s[i] == '!')
+				{
+					builder.Append("%21");
+				}
+				else if (s[i] == '$')
+				{
+					builder.Append("%24");
+				}
 				else
 				{
 					builder.Append(s[i]);

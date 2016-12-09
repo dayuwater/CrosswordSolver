@@ -19,7 +19,10 @@ namespace CrosswordSolver
 			// Grid 1-2, fail
 			// Grid 1-4, pass with 0 hint. Another solution
 
-			string[] s = File.ReadAllLines("/Users/tanwang/Projects/CrosswordSolver/CrosswordSolver/clue4.csv");
+			// Grid 2-1, pass with 1 hint. BAD(8 down)
+
+
+			string[] s = File.ReadAllLines("/Users/tanwang/Projects/CrosswordSolver/CrosswordSolver/clue3/clue3_1.csv");
 			int count = 0;
 			foreach (string s1 in s)
 			{
@@ -206,7 +209,8 @@ namespace CrosswordSolver
 
 			loadFile();
 			SetupBoard();
-
+			history.Push(board);
+			board.PrintBoard();
 			foreach (Word w in words.words)
 			{
 				if (!w.IsVisited(board))
